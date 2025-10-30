@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyk6e3a25swaf"]
+
+[ext_resource type="Script" uid="uid://bp0wix84u5cd3" path="res://ui/hud.gd" id="1_rbyyf"]
+
+[node name="Hud" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_rbyyf")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
