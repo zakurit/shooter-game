@@ -1,38 +1,52 @@
-[gd_scene load_steps=4 format=3 uid="uid://byrf4htnp3hd2"]
+[gd_scene load_steps=6 format=3 uid="uid://byrf4htnp3hd2"]
 
 [ext_resource type="Script" uid="uid://k6x7egw1g3s7" path="res://world/map_loader.gd" id="1_lx1ux"]
+[ext_resource type="PackedScene" uid="uid://dq2wt3en1ofhu" path="res://world/pr_rat.tscn" id="2_uvqf1"]
 
-[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_ka4i4"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_uvqf1"]
+sky_top_color = Color(0.95435005, 0.90772194, 0.5604534, 1)
+sky_horizon_color = Color(0.6302254, 0.07961867, 0.15824589, 1)
+sky_curve = 0.4547147
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_lx1ux"]
+[sub_resource type="Sky" id="Sky_bxc27"]
+sky_material = SubResource("ProceduralSkyMaterial_uvqf1")
+
+[sub_resource type="Environment" id="Environment_lc8ft"]
+background_mode = 2
+sky = SubResource("Sky_bxc27")
 
 [node name="Map" type="Node3D"]
 script = ExtResource("1_lx1ux")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("WorldBoundaryShape3D_ka4i4")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(9.383951, 0, 0, 0, 1.05826, 0, 0, 0, 8.99265, 0, 0, 0)
-mesh = SubResource("PlaneMesh_lx1ux")
-skeleton = NodePath("")
-
 [node name="RedSpawn1" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4097633, 0, 0)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, 0)
+gizmo_extents = 1.0
 
 [node name="RedSpawn2" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4097633, 0, 1.611227)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, 1.611227)
+gizmo_extents = 1.0
 
 [node name="RedSpawn3" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4097633, 0, -1.8072119)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, -1.8072119)
+gizmo_extents = 1.0
 
 [node name="BlueSpawn1" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.307955, 0, 0)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, 0)
+gizmo_extents = 1.0
 
 [node name="BlueSpawn2" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.307955, 0, 1.3113766)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, 1.3113766)
+gizmo_extents = 1.0
 
 [node name="BlueSpawn3" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.307955, 0, -1.3212147)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, -1.3212147)
+gizmo_extents = 1.0
+
+[node name="pr_rat" parent="." instance=ExtResource("2_uvqf1")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.91126674, 0.41181657, 0, -0.41181657, 0.91126674, 0, 21.251757, 64.222534)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lc8ft")

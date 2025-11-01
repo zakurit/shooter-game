@@ -11,14 +11,21 @@ config_version=5
 [application]
 
 config/name="ShooterGame"
-run/main_scene="uid://dhvw0c5s0f4m4"
+run/main_scene="uid://bw3hem2mjvtl4"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+run/updates_per_second=60
+run/vsync/vsync_mode=0
 
 [autoload]
 
 NetworkManager="*res://network/network_manager.gd"
 GameState="*res://network/game_state.gd"
+GameMode="*res://autoload/game_mode.gd"
+
+[display]
+
+window/vsync/vsync_mode=0
 
 [input]
 
@@ -47,3 +54,7 @@ shoot={
 "events": [null, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(130, 19),"global_position":Vector2(139, 67),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
 ]
 }
+
+[rendering]
+
+anti_aliasing/quality/msaa_3d=3
