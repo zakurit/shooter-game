@@ -11,17 +11,21 @@ var is_countdown_active: bool = false
 var red_team_count: int = 0
 var blue_team_count: int = 0
 
-# Track total team sizes (doesn't decrease on death)
+# Track total team sizes
 var red_team_size: int = 0
 var blue_team_size: int = 0
 
-# Spawn points (populated by map_loader.gd)
+# Prevent multiple respawn calls
+var is_respawning: bool = false
+
+# Spawn points
 var red_spawns: Array = []
 var blue_spawns: Array = []
 
 signal round_started
 signal round_ended
 signal countdown_tick(seconds: int)
+signal player_killed(killer_team: String, victim_team: String)
 
 func _process(delta):
 	if multiplayer.is_server():
@@ -40,10 +44,9 @@ func _process(delta):
 			round_time_left -= delta
 			rpc("update_round_time", round_time_left)
 			if round_time_left <= 0:
-				end_round()
+				end_round_timeout()
 
 func assign_team(peer_id: int) -> String:
-	# Balance teams: assign to team with fewer players
 	var team: String
 	
 	if red_team_size < blue_team_size:
@@ -55,7 +58,6 @@ func assign_team(peer_id: int) -> String:
 		blue_team_size += 1
 		blue_team_count += 1
 	else:
-		# Equal counts - random
 		team = "red" if randf() < 0.5 else "blue"
 		if team == "red":
 			red_team_size += 1
@@ -68,51 +70,76 @@ func assign_team(peer_id: int) -> String:
 	return team
 
 func on_player_died(team: String):
-	if multiplayer.is_server():
-		# Decrease alive count
-		if team == "red":
-			red_team_count = max(0, red_team_count - 1)
-		else:
-			blue_team_count = max(0, blue_team_count - 1)
-		
-		print("💀 Player died. Alive: Red: ", red_team_count, "/", red_team_size, " Blue: ", blue_team_count, "/", blue_team_size)
-		
-		# Check if a team is eliminated
-		if red_team_count == 0:
-			print("🏆 BLUE TEAM ELIMINATED RED TEAM!")
-			team_eliminated("blue")
-		elif blue_team_count == 0:
-			print("🏆 RED TEAM ELIMINATED BLUE TEAM!")
-			team_eliminated("red")
+	if not multiplayer.is_server():
+		return
+	
+	if is_respawning:
+		print("⚠️ Already respawning, ignoring death")
+		return
+	
+	# Decrease alive count
+	if team == "red":
+		red_team_count = max(0, red_team_count - 1)
+	else:
+		blue_team_count = max(0, blue_team_count - 1)
+	
+	print("💀 Player died. Alive: Red: ", red_team_count, "/", red_team_size, " Blue: ", blue_team_count, "/", blue_team_size)
+	
+	# Emit kill feed signal
+	var killer_team = "blue" if team == "red" else "red"
+	player_killed.emit(killer_team, team)
+	rpc("sync_kill_feed", killer_team, team)
+	
+	# Check if a team is eliminated
+	if red_team_count == 0 and blue_team_count > 0:
+		print("🏆 BLUE TEAM WINS!")
+		team_eliminated("blue")
+	elif blue_team_count == 0 and red_team_count > 0:
+		print("🏆 RED TEAM WINS!")
+		team_eliminated("red")
 
 func team_eliminated(winning_team: String):
 	if not multiplayer.is_server():
 		return
 	
-	print("🎉 ", winning_team.to_upper(), " TEAM WINS!")
+	if is_respawning:
+		print("⚠️ Already handling team elimination")
+		return
 	
-	# Award point to winning team
+	is_respawning = true
+	round_active = false  # Pause round
+	
+	# Award point
 	if winning_team == "red":
 		red_score += 1
 	else:
 		blue_score += 1
 	
 	rpc("update_scores", red_score, blue_score)
+	print("📊 Score: Red ", red_score, " - Blue ", blue_score)
 	
-	# Wait 2 seconds for dramatic effect
+	# Small delay before respawn
 	await get_tree().create_timer(2.0).timeout
 	
-	# Respawn ALL players
 	respawn_all_players()
 	
-	# Reset alive counts to full team sizes
+	# Reset alive counts
 	red_team_count = red_team_size
 	blue_team_count = blue_team_size
 	
-	print("🔄 Teams reset. Ready for next round!")
+	# Reset round timer and restart
+	round_time_left = 60.0
+	rpc("update_round_time", round_time_left)
+	round_active = true
+	
+	is_respawning = false
+	print("✅ Round continues!")
+
+@rpc("authority", "call_local")
+func sync_kill_feed(killer_team: String, victim_team: String):
+	player_killed.emit(killer_team, victim_team)
 
 func random_spawn(team: String) -> Vector3:
-	# Use spawn points from map if available
 	if team == "red" and red_spawns.size() > 0:
 		var spawn = red_spawns[randi() % red_spawns.size()]
 		return spawn.global_position if spawn is Node3D else Vector3(-10, 1, 0)
@@ -120,14 +147,12 @@ func random_spawn(team: String) -> Vector3:
 		var spawn = blue_spawns[randi() % blue_spawns.size()]
 		return spawn.global_position if spawn is Node3D else Vector3(10, 1, 0)
 	
-	# Fallback if no spawn points defined in map
 	var spawn_area: Vector3
 	if team == "red":
 		spawn_area = Vector3(-10, 1, 0)
 	else:
 		spawn_area = Vector3(10, 1, 0)
 	
-	# Add random offset
 	spawn_area.x += randf_range(-3, 3)
 	spawn_area.z += randf_range(-3, 3)
 	return spawn_area
@@ -157,39 +182,44 @@ func start_round():
 		round_time_left = 60.0
 		rpc("round_state_changed", true)
 		round_started.emit()
-		print("🎮 ROUND START! Red: ", red_team_size, " vs Blue: ", blue_team_size)
+		print("🎮 ROUND START!")
 
-func end_round():
+func end_round_timeout():
 	if multiplayer.is_server():
 		round_active = false
 		rpc("round_state_changed", false)
 		round_ended.emit()
 		
-		print("⏱️ Round ended by timer! Red: ", red_score, " Blue: ", blue_score)
+		print("⏱️ Round ended by timer!")
 		
-		# Wait 3 seconds, then respawn everyone
 		await get_tree().create_timer(3.0).timeout
 		respawn_all_players()
 		
-		# Reset alive counts
 		red_team_count = red_team_size
 		blue_team_count = blue_team_size
 		
-		# Wait 2 more seconds, then start countdown for next round
 		await get_tree().create_timer(2.0).timeout
 		start_countdown()
 
 func respawn_all_players():
-	if multiplayer.is_server():
-		print("🔄 Respawning all players...")
-		var players = get_tree().get_nodes_in_group("players")
-		print("   Found ", players.size(), " players")
-		for player in players:
-			if player is Player:
-				var spawn_pos = random_spawn(player.team)
-				print("   Respawning ", player.name, " (", player.team, ") at ", spawn_pos)
-				player.force_respawn(spawn_pos)  # Call on server
-				player.rpc_id(player.get_multiplayer_authority(), "force_respawn", spawn_pos)  # Call on client
+	if not multiplayer.is_server():
+		return
+	
+	print("🔄 Respawning all players...")
+	var players = get_tree().get_nodes_in_group("players")
+	
+	print("   Found ", players.size(), " players in group")
+	
+	for player in players:
+		if player.has_method("force_respawn"):
+			var spawn_pos = random_spawn(player.team)
+			print("   ↻ Calling respawn on ", player.name, " (", player.team, ") at ", spawn_pos)
+			# Call the RPC which has "call_local" so it runs on server AND clients
+			player.rpc("force_respawn", spawn_pos)
+		else:
+			print("   ⚠️ Player ", player.name, " doesn't have force_respawn method!")
+	
+	print("✅ All respawn RPCs sent!")
 
 @rpc("authority", "call_local")
 func round_state_changed(active: bool):

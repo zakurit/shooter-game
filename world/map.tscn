@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://byrf4htnp3hd2"]
+[gd_scene load_steps=7 format=3 uid="uid://byrf4htnp3hd2"]
 
 [ext_resource type="Script" uid="uid://k6x7egw1g3s7" path="res://world/map_loader.gd" id="1_lx1ux"]
 [ext_resource type="PackedScene" uid="uid://dq2wt3en1ofhu" path="res://world/pr_rat.tscn" id="2_uvqf1"]
+[ext_resource type="Script" uid="uid://bsepyikp303h8" path="res://player/spectator_camera.gd" id="3_bxc27"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_uvqf1"]
 sky_top_color = Color(0.95435005, 0.90772194, 0.5604534, 1)
@@ -50,3 +51,6 @@ transform = Transform3D(1, 0, 0, 0, 0.91126674, 0.41181657, 0, -0.41181657, 0.91
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_lc8ft")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+script = ExtResource("3_bxc27")

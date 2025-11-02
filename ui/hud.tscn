@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cyk6e3a25swaf"]
+[gd_scene load_steps=3 format=3 uid="uid://cyk6e3a25swaf"]
 
 [ext_resource type="Script" uid="uid://bp0wix84u5cd3" path="res://ui/hud.gd" id="1_rbyyf"]
+[ext_resource type="PackedScene" uid="uid://doyii40a3x354" path="res://ui/kill_feed.tscn" id="2_276te"]
 
 [node name="Hud" type="Control"]
 layout_mode = 3
@@ -48,3 +49,14 @@ offset_top = 35.0
 offset_right = 20.0
 offset_bottom = 58.0
 grow_horizontal = 2
+
+[node name="KillFeed" parent="." instance=ExtResource("2_276te")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = -2.0
+offset_right = -200.0
+offset_bottom = -2.0
+grow_horizontal = 0

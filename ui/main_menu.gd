@@ -7,7 +7,7 @@ extends Control
 
 func _ready():
 	if "-server" in OS.get_cmdline_args():
-		get_tree().change_scene_to_file("res://game.tscn")
+		get_tree().change_scene_to_file.call_deferred("res://game.tscn")
 		return
 	
 	# Default values
