@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://b5lbl8l313wrr" path="res://world/map.glb" id="1_edu7i"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_edu7i"]
+cull_mode = 2
 albedo_color = Color(0.2721147, 0, 0.044463128, 1)
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_mklfx"]

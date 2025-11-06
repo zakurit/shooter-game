@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://cc55274fqlnic"]
+
+[ext_resource type="Script" uid="uid://d67xwsv5kpgb" path="res://ui/chat_ui.gd" id="1_md7lx"]
+
+[node name="ChatUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_md7lx")
+
+[node name="ChatContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="ChatLog" type="RichTextLabel" parent="ChatContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="InputContainer" type="HBoxContainer" parent="ChatContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ChatInput" type="LineEdit" parent="ChatContainer/InputContainer"]
+layout_mode = 2
+mouse_filter = 2
+placeholder_text = "Message all..."

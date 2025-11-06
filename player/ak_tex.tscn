@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ceq7482s38vpl"]
+
+[ext_resource type="PackedScene" uid="uid://fgogoajjfmw7" path="res://player/ak_tex.fbx" id="1_rbn4m"]
+
+[node name="ak_tex" instance=ExtResource("1_rbn4m")]
+
+[node name="f_ak47_template_skeleton" parent="." index="0"]
+transform = Transform3D(100, 0, 0, 0, -4.3711384e-06, 99.99999, 0, -99.99999, -4.3711384e-06, 0, 0, 0)

@@ -12,26 +12,60 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0dkrt")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = 1
+custom_minimum_size = Vector2(311.685, 0)
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 420.0
+offset_top = 102.0
+offset_right = 732.0
+offset_bottom = 524.87
+color = Color(1, 1, 1, 0.14117648)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("1_t7e0r")
+expand_mode = 1
+stretch_mode = 4
+metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+z_index = 2
+custom_minimum_size = Vector2(227.275, 0)
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -56.0
-offset_right = 56.0
+offset_left = -106.0
+offset_top = 175.0
+offset_right = 106.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "VALORANT 2.0"
+horizontal_alignment = 1
+
+[node name="NicknameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Type in your alias:"
+
+[node name="NicknameInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="IpLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Input server IP and port:"
 
 [node name="IpInput" type="LineEdit" parent="VBoxContainer"]
 layout_mode = 2
@@ -39,13 +73,15 @@ layout_mode = 2
 [node name="PortInput" type="LineEdit" parent="VBoxContainer"]
 layout_mode = 2
 
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
 [node name="ConnectButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Connect"
 
-[node name="HostButton" type="Button" parent="VBoxContainer"]
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
-text = "Host"
 
 [node name="StatusLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2

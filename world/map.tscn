@@ -20,27 +20,27 @@ sky = SubResource("Sky_bxc27")
 script = ExtResource("1_lx1ux")
 
 [node name="RedSpawn1" type="Marker3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, 0)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0.99968857, 0)
 gizmo_extents = 1.0
 
 [node name="RedSpawn2" type="Marker3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, 1.611227)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0.99968857, 1.611227)
 gizmo_extents = 1.0
 
 [node name="RedSpawn3" type="Marker3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0, -1.8072119)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -60, 0.99968857, -1.8072119)
 gizmo_extents = 1.0
 
 [node name="BlueSpawn1" type="Marker3D" parent="."]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, 0)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0.99968874, 0)
 gizmo_extents = 1.0
 
 [node name="BlueSpawn2" type="Marker3D" parent="."]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, 1.3113766)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0.99968874, 1.3113766)
 gizmo_extents = 1.0
 
 [node name="BlueSpawn3" type="Marker3D" parent="."]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0, -1.3212147)
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 60, 0.99968874, -1.3212147)
 gizmo_extents = 1.0
 
 [node name="pr_rat" parent="." instance=ExtResource("2_uvqf1")]

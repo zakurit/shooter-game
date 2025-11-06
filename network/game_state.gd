@@ -22,12 +22,17 @@ var is_respawning: bool = false
 var red_spawns: Array = []
 var blue_spawns: Array = []
 
+# NEW: Updated signal with player names
 signal round_started
 signal round_ended
 signal countdown_tick(seconds: int)
-signal player_killed(killer_team: String, victim_team: String)
+signal player_killed(killer_name: String, victim_name: String, killer_team: String, victim_team: String)
 
 func _process(delta):
+	# SAFETY CHECK: Only run if multiplayer is active
+	if not multiplayer or not multiplayer.multiplayer_peer:
+		return
+	
 	if multiplayer.is_server():
 		# Pre-round countdown
 		if is_countdown_active:
@@ -49,27 +54,28 @@ func _process(delta):
 func assign_team(peer_id: int) -> String:
 	var team: String
 	
+	# Balance teams
 	if red_team_size < blue_team_size:
 		team = "red"
-		red_team_size += 1
-		red_team_count += 1
 	elif blue_team_size < red_team_size:
 		team = "blue"
+	else:
+		# Equal, pick random
+		team = "red" if randf() < 0.5 else "blue"
+	
+	# Increment counters
+	if team == "red":
+		red_team_size += 1
+		red_team_count += 1
+	else:
 		blue_team_size += 1
 		blue_team_count += 1
-	else:
-		team = "red" if randf() < 0.5 else "blue"
-		if team == "red":
-			red_team_size += 1
-			red_team_count += 1
-		else:
-			blue_team_size += 1
-			blue_team_count += 1
 	
-	print("Assigned peer ", peer_id, " to team: ", team, " (Red: ", red_team_size, ", Blue: ", blue_team_size, ")")
+	print("✅ Assigned peer ", peer_id, " to team: ", team, " (Red: ", red_team_size, ", Blue: ", blue_team_size, ")")
 	return team
 
-func on_player_died(team: String):
+# NEW: Updated signature with player names
+func on_player_died(victim_team: String, victim_name: String, killer_team: String = "", killer_name: String = ""):
 	if not multiplayer.is_server():
 		return
 	
@@ -78,17 +84,16 @@ func on_player_died(team: String):
 		return
 	
 	# Decrease alive count
-	if team == "red":
+	if victim_team == "red":
 		red_team_count = max(0, red_team_count - 1)
 	else:
 		blue_team_count = max(0, blue_team_count - 1)
 	
-	print("💀 Player died. Alive: Red: ", red_team_count, "/", red_team_size, " Blue: ", blue_team_count, "/", blue_team_size)
+	print("💀 ", victim_name, " died. Alive: Red: ", red_team_count, "/", red_team_size, " Blue: ", blue_team_count, "/", blue_team_size)
 	
-	# Emit kill feed signal
-	var killer_team = "blue" if team == "red" else "red"
-	player_killed.emit(killer_team, team)
-	rpc("sync_kill_feed", killer_team, team)
+	# Emit kill feed signal with names
+	player_killed.emit(killer_name, victim_name, killer_team, victim_team)
+	rpc("sync_kill_feed", killer_name, victim_name, killer_team, victim_team)
 	
 	# Check if a team is eliminated
 	if red_team_count == 0 and blue_team_count > 0:
@@ -118,8 +123,8 @@ func team_eliminated(winning_team: String):
 	rpc("update_scores", red_score, blue_score)
 	print("📊 Score: Red ", red_score, " - Blue ", blue_score)
 	
-	# Small delay before respawn
-	await get_tree().create_timer(2.0).timeout
+	# Faster respawn for better gameplay flow (0.5s instead of 2s)
+	await get_tree().create_timer(0.5).timeout
 	
 	respawn_all_players()
 	
@@ -135,23 +140,28 @@ func team_eliminated(winning_team: String):
 	is_respawning = false
 	print("✅ Round continues!")
 
+# NEW: Updated RPC signature
 @rpc("authority", "call_local")
-func sync_kill_feed(killer_team: String, victim_team: String):
-	player_killed.emit(killer_team, victim_team)
+func sync_kill_feed(killer_name: String, victim_name: String, killer_team: String, victim_team: String):
+	player_killed.emit(killer_name, victim_name, killer_team, victim_team)
 
 func random_spawn(team: String) -> Vector3:
 	if team == "red" and red_spawns.size() > 0:
 		var spawn = red_spawns[randi() % red_spawns.size()]
-		return spawn.global_position if spawn is Node3D else Vector3(-10, 1, 0)
+		var pos = spawn.global_position if spawn is Node3D else Vector3(-10, 2, 0)
+		pos.y += 1.0  # Add safety offset above ground
+		return pos
 	elif team == "blue" and blue_spawns.size() > 0:
 		var spawn = blue_spawns[randi() % blue_spawns.size()]
-		return spawn.global_position if spawn is Node3D else Vector3(10, 1, 0)
+		var pos = spawn.global_position if spawn is Node3D else Vector3(10, 2, 0)
+		pos.y += 1.0  # Add safety offset above ground
+		return pos
 	
 	var spawn_area: Vector3
 	if team == "red":
-		spawn_area = Vector3(-10, 1, 0)
+		spawn_area = Vector3(-10, 2, 0)
 	else:
-		spawn_area = Vector3(10, 1, 0)
+		spawn_area = Vector3(10, 2, 0)
 	
 	spawn_area.x += randf_range(-3, 3)
 	spawn_area.z += randf_range(-3, 3)

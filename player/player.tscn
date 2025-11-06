@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://clbm02g51flfm"]
+[gd_scene load_steps=6 format=3 uid="uid://clbm02g51flfm"]
 
 [ext_resource type="Script" uid="uid://b7v2bpk0hv84e" path="res://player/player_input.gd" id="1_oul6g"]
 [ext_resource type="Script" uid="uid://bijo626vo3jir" path="res://player/player.gd" id="1_rkbax"]
+[ext_resource type="PackedScene" uid="uid://fgogoajjfmw7" path="res://player/ak_tex.fbx" id="2_g1dw6"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rkbax"]
 
@@ -13,6 +14,11 @@ script = ExtResource("1_rkbax")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9995149, 0)
 current = true
+
+[node name="GunViewmodel" type="Node3D" parent="Camera3D"]
+
+[node name="ak_tex" parent="Camera3D/GunViewmodel" instance=ExtResource("2_g1dw6")]
+transform = Transform3D(-0.04993597, 0, 0.002529645, 0, 0.05, 0, -0.002529645, 0, -0.04993597, -0.09463978, 0, -0.049144268)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
